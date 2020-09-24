@@ -1,0 +1,5816 @@
+{
+	"info": {
+		"_postman_id": "0b08477d-a473-4bf8-89d4-2d9c0767fc7c",
+		"name": "purosathi test scripts",
+		"description": "test scripts for schema validation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Administration",
+			"item": [
+				{
+					"name": "login",
+					"item": [
+						{
+							"name": "Login Authentication",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d75bc27b-80e5-4604-9329-dabb394eefdf",
+										"exec": [
+											"pm.environment.set(\"token\",\"\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "89d98f38-b51e-47c3-9c07-5f51935ddf90",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"",
+											"pm.environment.set(\"token\", data.userSession.securityToken);",
+											"",
+											"",
+											"pm.environment.set(\"UserSessionID\", data.userSession.userSession);",
+											"",
+											"pm.environment.set(\"UniqueID\", data.userSession.id);",
+											"",
+											"",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    console.log(\"User logged in successfully\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"userId\": \"secretary1\",\r\n  \"password\": \"12345678\",\r\n  \"isBackgroundUser\": false\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Login\n",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Login\n"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login/error",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "6bd6388a-e444-4804-a3ca-0cedee521ad9",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "73149c2b-979b-42fe-8ecb-93077e769dba",
+										"exec": [
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(500);",
+											"console.log(\"User login error\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Login/error\n",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Login",
+										"error\n"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "309630cd-e802-46f5-bab3-cf673fd59adc",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ef670f3c-c2a9-43ab-b394-b78317d0feb4",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Create new user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5e956cff-66b5-43fa-a3ec-f8228ee0bf2a",
+										"exec": [
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"console.log(\"Successfully created a user\");",
+											"});",
+											"var data = JSON.parse(responseBody);",
+											"pm.globals.set(\"tuid\", data.userId);",
+											"",
+											"var jsonArray = pm.response.json();",
+											"var persID = pm.globals.get(\"tuid\");",
+											"pm.test(\"tests check if userId exist in array\", function () {",
+											" var i=0;",
+											" for(i; i<jsonArray.length;i++){",
+											" pm.expect(jsonArray).to.have.property(jsonArray[i].userId, persID);",
+											"console.error();",
+											" }",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d3afde45-f359-4632-b7b7-19bca151c66e",
+										"exec": [
+											"var id = \"test\" +\"{{$randomInt}}\";",
+											"pm.globals.set(\"uid\", id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{$guid}}\",\r\n  \"createSessionId\": \"{{UserSessionID}}\",\r\n  \"updateSessionId\": \"{{UserSessionID}}\",\r\n  \"code\": \"{{uid}}\",\r\n  \"userId\": \"{{uid}}\",\r\n  \"userFirstName\": \"Test\",\r\n  \"userLastName\": \"0055\",\r\n  \"userMobile\": \"8553204535\",\r\n  \"userEmail\": \"qatest@mailinator.com\",\r\n  \"password\": \"12345678\",\r\n  \"passwordHint\": \"12345678\",\r\n  \"isActive\": true,\r\n  \"isLocked\": false,\r\n  \"isBlocked\": false,\r\n  \"isExternal\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User/Lists",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4fc0b049-3138-41be-a972-621e3bab9113",
+										"exec": [
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"console.log(\"Got user list successfully\");",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User/List",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"List"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User/userUniqueID (get user info)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a40f9042-70b5-427d-9da4-e28a6dbd83ed",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "880f8539-346b-446f-b6d6-d373aa5c9064",
+										"exec": [
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"console.log(\"User info from uniqueID success\");",
+											"});",
+											"",
+											"var data = JSON.parse(responseBody);",
+											"pm.environment.set(\"testUserId\", data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User/{{UniqueID}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"{{UniqueID}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update user data with uniqueID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "09a146ea-37c7-4e94-bd5c-b67d9d4ec5d5",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    console.log(\"Update user data success\")",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{UniqueID}}\",\r\n  \"createSessionId\": \"{{UserSessionID}}\",\r\n  \"updateSessionId\": \"{{UserSessionID}}\",\r\n  \"code\": \"{{uid}}\",\r\n  \"userId\": \"{{uid}}\",\r\n  \"userFirstName\": \"Test\",\r\n  \"userLastName\": \"{{$randomInt}}\",\r\n  \"userMobile\": \"8553204535\",\r\n  \"userEmail\": \"qatest@mailinator.com\",\r\n  \"password\": \"12345678\",\r\n  \"passwordHint\": \"12345678\",\r\n  \"isActive\": true,\r\n  \"isLocked\": false,\r\n  \"isBlocked\": false,\r\n  \"isExternal\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User/{{UniqueID}}\n",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"{{UniqueID}}\n"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User/ResetPassword",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8fe5ac15-a38b-432c-b999-3908dad9090d",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    console.log(\"Reset password sucess\")",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{UniqueID}}\",\r\n  \"oldPassword\": \"12345678\",\r\n  \"newPassword\": \"12345678\",\r\n  \"confirmPassword\": \"12345678\",\r\n  \"isResetByAdnin\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User/ResetPassword",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"ResetPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User/LogOutUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "079103c9-abfc-4945-8885-7c07884d3f5d",
+										"exec": [
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"console.log(\"User logged out successfully\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/User/LogOutUser?LogOutSession={{UserSessionID}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"LogOutUser"
+									],
+									"query": [
+										{
+											"key": "LogOutSession",
+											"value": "{{UserSessionID}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User/error",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "318c34b2-6169-4880-818f-9a44d47fdbe7",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(500);",
+											"    console.log(\"User error\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"error"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Role wise user List",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/User/List/0c0bf3ae-bb4b-4d71-bd39-7678272e9caa",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"User",
+										"List",
+										"0c0bf3ae-bb4b-4d71-bd39-7678272e9caa"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "User role",
+					"item": [
+						{
+							"name": "Gets list of user roles",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "c40c5883-9b53-4686-979a-82c7171705e4",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "ef7e3a96-cbd5-4ec4-a46f-718d5a1571d8",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"pm.globals.set('randomNumber', Math.floor(Math.random() * 13));",
+											"pm.environment.set(\"roleCatID\", data[pm.globals.get(\"randomNumber\")].roleCategory);",
+											"pm.environment.set(\"userunqID\", data[pm.globals.get(\"randomNumber\")].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole?includeSystemRoles=true&includeInActives=true",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole"
+									],
+									"query": [
+										{
+											"key": "includeSystemRoles",
+											"value": "true"
+										},
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Creates a new user role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c467badf-863c-4d50-a99c-7f7538194fbc",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"pm.environment.set(\"userunqID\", data.id);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "28b888f2-7a7b-4ff3-bbee-35730c13bb87",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"description\": \"Test Engineer\",\r\n  \"roleCategory\": {{roleCatID}},\r\n  \"isActive\": true,\r\n  \"note\": \"test\",\r\n  \"isInternal\": false,\r\n  \"id\": \"{{$guid}}\",\r\n  \"code\": \"TEST\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular user role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "210e1e7e-e3bc-440d-a613-2228d65b3665",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"pm.environment.set(\"testRoleId\", data.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole/{{userunqID}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole",
+										"{{userunqID}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates user role data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"description\": \"Update test\",\r\n  \"roleCategory\": {{roleCatID}},\r\n  \"isActive\": true,\r\n  \"note\": \"Update\",\r\n  \"isInternal\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole/{{testRoleId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole",
+										"{{testRoleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserRole/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "User role assignment",
+					"item": [
+						{
+							"name": "Create a new department(Assigning role)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"userId\": \"{{UniqueID}}\",\r\n  \"effectiveFrom\": \"2020-03-14T10:39:43.881Z\",\r\n  \"roles\": [\r\n    {\r\n      \"roleId\": \"{{testRoleId}}\",\r\n      \"startsOn\": \"2020-03-14T10:39:43.881Z\",\r\n      \"expiresOn\": \"2021-03-14T10:39:43.881Z\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRoleAssignment",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRoleAssignment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets assigned roles of a user as on effective date",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRoleAssignment/{{UniqueID}}/EffectiveFrom/2020-03-14",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRoleAssignment",
+										"{{UniqueID}}",
+										"EffectiveFrom",
+										"2020-03-14"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UserRoleAssignment/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRoleAssignment/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRoleAssignment",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Access permission",
+					"item": [
+						{
+							"name": "Gets access permissions for a role for an organization unit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/AccessPermissions/Role/{{roleId}}/Unit/{{rootUnitId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"AccessPermissions",
+										"Role",
+										"{{roleId}}",
+										"Unit",
+										"{{rootUnitId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates user role access permissions for an unit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"effectiveFrom\": \"2020-03-13T06:32:11.553Z\",\r\n  \"accessRights\": [\r\n    {\r\n      \"functionalityId\": 1212,\r\n      \"accessId\": 4,\r\n      \"permissions\": [\r\n        \"string\"\r\n      ],\r\n      \r\n      \"accessJson\": \"string\"\r\n    },\r\n    {\r\n      \"functionalityId\": 1212,\r\n      \"accessId\": 2,\r\n      \"permissions\": [\r\n        \"string\"\r\n      ],\r\n      \r\n      \"accessJson\": \"string\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/AccessPermissions/role/{{roleId}}/Unit/{{rootUnitId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"AccessPermissions",
+										"role",
+										"{{roleId}}",
+										"Unit",
+										"{{rootUnitId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AccessPermissions/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/AccessPermissions/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"AccessPermissions",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Functional Module",
+					"item": [
+						{
+							"name": "Gets list of modules its hierarchy tree",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FunctionalModule/1110",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FunctionalModule",
+										"1110"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AccessConfiguration Get list of modules",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FunctionalModule/1110/AccessConfiguration",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FunctionalModule",
+										"1110",
+										"AccessConfiguration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FunctionalModule/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FunctionalModule/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FunctionalModule",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "User role category",
+					"item": [
+						{
+							"name": "UserRole/Categories/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole/Categories/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole",
+										"Categories",
+										"error"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get list of User role category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/UserRole/Categories?includeInActives=true",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"UserRole",
+										"Categories"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Address",
+					"item": [
+						{
+							"name": "add address -1",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Id\": \"42170113-2148-4bdc-b6ea-88dfad579b2c\",\n    \"ReferenceId\": \"792a3128-0292-4b4a-a7ef-f9e0d0978c77\",\n    \"BuildingName\": \"\",\n    \"HouseNo\": null,\n    \"FlatNo\": \"\",\n    \"StreetName\": \"hari mohan dutta\",\n    \"PinCode\": \"70028\",\n    \"WardNo\": \"\",\n    \"CountryId\": \"00000000-0000-0000-0000-000000000000\",\n    \"StateId\": \"00000000-0000-0000-0000-000000000000\",\n    \"IsActive\": true,\n    \"AddressType\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Address",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Address"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "add address -2",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Id\": \"043400d9-fadc-4374-ab3a-03ed31b6d8e3\",\n    \"ReferenceId\": \"792a3128-0292-4b4a-a7ef-f9e0d0978c77\",\n    \"BuildingName\": \"\",\n    \"HouseNo\": null,\n    \"FlatNo\": \"\",\n    \"StreetName\": \"hari mohan dutta\",\n    \"PinCode\": \"70028\",\n    \"WardNo\": \"\",\n    \"CountryId\": \"00000000-0000-0000-0000-000000000000\",\n    \"StateId\": \"00000000-0000-0000-0000-000000000000\",\n    \"IsActive\": true,\n    \"AddressType\": 3\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Address",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Address"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Creates a new address",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"f283c3a0-57a2-42ba-9881-0e250216f697\",\r\n  \"referenceId\": \"bde4dec9-1128-4d14-9cd0-421d50eea4c0\",\r\n  \"buildingName\": \"Nirmal Bhawan\",\r\n  \"houseNo\": \"552\",\r\n  \"flatNo\": \"128\",\r\n  \"streetName\": \"Vivekanand\",\r\n  \"pinCode\": \"700012\",\r\n  \"wardNo\": \"15\",\r\n  \"countryId\": \"00000000-0000-0000-0000-000000000000\",\r\n  \"stateId\": \"00000000-0000-0000-0000-000000000000\",\r\n  \"isActive\": true,\r\n  \"addressType\": 5,\r\n  \"landMark\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Address",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Address"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get detail address based on reference id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Address/bde4dec9-1128-4d14-9cd0-421d50eea4c0",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Address",
+										"bde4dec9-1128-4d14-9cd0-421d50eea4c0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Address/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Address/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Address",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Functionality",
+					"item": [
+						{
+							"name": "Gets list of functionalities under purosathi",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Functionality",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Functionality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": " Functionality​/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Functionality/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Functionality",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Common",
+			"item": [
+				{
+					"name": "Organization Unit",
+					"item": [
+						{
+							"name": "Creates a new organization unit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"description\": \"test16\",\r\n  \"isVirtual\": true,\r\n  \"isActive\": true,\r\n  \"parentUnitId\": \"{{parentID}}\",\r\n  \"note\": \"string\",\r\n  \"id\": \"{{$guid}}\",\r\n  \"code\": \"TEST16\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/OrganizationUnit",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OrganizationUnit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets organization unit list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "425c61a1-a764-4668-a33b-c5909b593e9c",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/OrganizationUnit/{{parentID}}/list?includeInActives=true",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OrganizationUnit",
+										"{{parentID}}",
+										"list"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates organization unit data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"test\",\n    \"isVirtual\": true,\n    \"isActive\": true,\n    \"parentUnitId\": \"{{parentID}}\",\n    \"note\": \"Update\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/OrganizationUnit/{{testUnitId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OrganizationUnit",
+										"{{testUnitId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of organization units that belong to the subtree of the root. If root is empty string, then all the times are returned",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/OrganizationUnit/{{rootUnitId}}/list?includeInActives=true",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OrganizationUnit",
+										"{{rootUnitId}}",
+										"list"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "OrganizationUnit/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/OrganizationUnit/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OrganizationUnit",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Department",
+					"item": [
+						{
+							"name": "Creates a new department",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"description\": \"test for dept\",\r\n  \"organizations\": [\r\n    {\r\n      \"organizationUnitId\": \"{{rootUnitId}}\"\r\n    }\r\n  ],\r\n  \"isActive\": true,\r\n  \"isInternal\": false,\r\n  \"note\": \"string\",\r\n  \"id\": \"{{$guid}}\",\r\n  \"code\": \"dep\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Department",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Department"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of departments",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/Department?includeInActives=true\n",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Department"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true\n"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular department",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/Department/{{deptId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Department",
+										"{{deptId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates department data",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "50da9969-43b5-43a9-ad6e-7763e1bf3fcc",
+										"exec": [
+											"pm.globals.set(\"deptId\", \"148f591b-3350-42a3-8b9a-8ea54e6e95b9\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"description\": \"update department test\",\r\n  \"organizations\": [\r\n    {\r\n      \"organizationUnitId\": \"{{testUnitId}}\"\r\n    }\r\n  ],\r\n  \"isActive\": true,\r\n  \"isInternal\": false,\r\n  \"note\": \"string\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Department/{{deptId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Department",
+										"{{deptId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Department/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/Department/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Department",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Priority",
+					"item": [
+						{
+							"name": "Gets list of diffetent priorities defined under purosathi",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Priority",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Priority"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Priority/error",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/Priority/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Priority",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Status",
+					"item": [
+						{
+							"name": "Gets list of statuses depending on functionality",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/Status/Statuses/21",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Status",
+										"Statuses",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Status/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Status/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Status",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "FileAttachments",
+					"item": [
+						{
+							"name": "FileAttachments/File",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FileAttachments/File",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FileAttachments",
+										"File"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FileAttachments",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"6a5468b9-a9d7-47b1-8940-e8d308adc956\",\r\n  \"functionalityTypeId\": 20,\r\n  \"referenceId\": \"103f8f2a-37b5-455d-a84c-21a427b31b2f\",\r\n  \"fileId\": \"3a1084ca-dfbf-44b9-9624-2b71247d8fb9\",\r\n  \"description\": \"abc\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FileAttachments",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FileAttachments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FileAttachments/{attachmentId}",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FileAttachments/{{attachmentId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FileAttachments",
+										"{{attachmentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FileAttachments/Functionality/{functionalityId}/Reference/{uniqueReferenceId}",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FileAttachments/Functionality/21/Reference/{{RefId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FileAttachments",
+										"Functionality",
+										"21",
+										"Reference",
+										"{{RefId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FileAttachments/File/{attachmentId}",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FileAttachments/File/6a5468b9-a9d7-47b1-8940-e8d308adc956",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FileAttachments",
+										"File",
+										"6a5468b9-a9d7-47b1-8940-e8d308adc956"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FileAttachments/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/FileAttachments/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"FileAttachments",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "HolidayCalender",
+					"item": [
+						{
+							"name": "Creates a new Holiday Calendar",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"d4ecee64-c420-4e43-a27d-a06a3c0973d6\",\r\n  \"code\": \"NW01\",\r\n  \"description\": \"New Holiday Calendar\",\r\n  \"isActive\": true,\r\n  \"isInternal\": false,\r\n  \"note\": \"string\",\r\n  \"holidayList\": [\r\n    {\r\n      \"code\": \"L01\",\r\n      \"holidayListId\": \"f29bd89a-7bc1-4579-b55a-57b571d43299\",\r\n      \"holidayStartDate\": \"2020-03-01\",\r\n      \"holidayEndDate\": \"2020-03-05\"\r\n    }\r\n  ],\r\n  \"holidayWorkingCalendar\": [\r\n    {\r\n      \"workingCalendarId\": \"9456c170-1f72-4783-a1f9-0fcb2e7b1c42\",\r\n      \"holidayEffectiveFrom\": \"2020-03-01\",\r\n      \"holidayIsActive\": true\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/HolidayCalender",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"HolidayCalender"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Creates a fixed holiday",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"b23e46e6-21a9-42ce-bc19-99a3319b755a\",\r\n  \"code\": \"H002\",\r\n  \"description\": \"Holi\",\r\n  \"dayOfHoliday\": 9,\r\n  \"monthOfHoliday\": 3,\r\n  \"isActive\": true,\r\n  \"isInternal\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/HolidayCalender/FixedHoliday",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"HolidayCalender",
+										"FixedHoliday"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of fixed holidays",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/HolidayCalender/FixedHolidays",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"HolidayCalender",
+										"FixedHolidays"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HolidayCalender/error",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/HolidayCalender/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"HolidayCalender",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "SystemMessage",
+					"item": [
+						{
+							"name": "Get System Messages for logged in user",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/SystemMessage/50309822-22b4-43a4-a235-ad62205586c9",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"SystemMessage",
+										"50309822-22b4-43a4-a235-ad62205586c9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Creats system meassges",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n  {\r\n    \"id\": \"57538b94-577c-4cfb-919e-7ed4c45e8dae\",\r\n    \"type\": 1,\r\n    \"raisedOn\": \"2020-05-01T11:57:38.040Z\",\r\n    \"expiresOn\": \"2020-06-01T11:57:38.040Z\",\r\n    \"tittle\": \"New Message\",\r\n    \"messageText\": \"do task\",\r\n    \"messageRecipients\": [\r\n      {\r\n        \"userId\": \"71f9b7d3-58dd-4825-9e26-abc198786bca\"\r\n      }\r\n    ],\r\n    \"referenceInfo\": [\r\n      {\r\n        \"functionalityTypeId\": 2,\r\n        \"referenceId\": \"1a5fbf54-3e54-4460-b3a3-70a82723f388\",\r\n        \"referenceDocumentNo\": \"null\",\r\n        \"referenceDocumentDate\": \"2020-05-01T11:57:38.040Z\"\r\n      }\r\n    ],\r\n    \"messageGenerationInfo\": [\r\n      {\r\n        \"systemMessageGenerationId\": \"d5407cab-5ba6-4d58-a447-08579b177d3e\",\r\n        \"actualMessageDate\": \"2020-05-01T11:57:38.040Z\"\r\n      }\r\n    ]\r\n  }\r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/SystemMessage",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"SystemMessage"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get System Messages which are already configured",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/SystemMessage/ConfiguredMessages?functionalityId=2&messageDate=2020-06-01T11%3A57%3A38.040Z&messagetype=1",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"SystemMessage",
+										"ConfiguredMessages"
+									],
+									"query": [
+										{
+											"key": "functionalityId",
+											"value": "2"
+										},
+										{
+											"key": "messageDate",
+											"value": "2020-06-01T11%3A57%3A38.040Z"
+										},
+										{
+											"key": "messagetype",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SystemMessage/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/SystemMessage/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"SystemMessage",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "WorkingCalendar",
+					"item": [
+						{
+							"name": "Creates a new Working Calendar",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{appConfigUrl}}/",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of working calendars",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/WorkingCalendar",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"WorkingCalendar"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets calendar details based on Id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/WorkingCalendar/CalendarId?workinCalendarId=13a310cb-77d7-4a31-aef2-9545da72f1cd",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"WorkingCalendar",
+										"CalendarId"
+									],
+									"query": [
+										{
+											"key": "workinCalendarId",
+											"value": "13a310cb-77d7-4a31-aef2-9545da72f1cd"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Creates new definition of working calendars's off days and working hours",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"workingCalendarId\": \"46931779-9f75-4094-be06-b3f21d83fc74\",\r\n  \"effectiveFrom\": \"2020-05-02\",\r\n  \"weeklyOffDays\": [\r\n    {\r\n      \"weekDaysNo\": 2,\r\n      \"weekNo\": 4\r\n    }\r\n  ],\r\n  \"workingHours\": [\r\n    {\r\n      \"weekDaysNo\": 5,\r\n      \"startTime\": \"09:00:00\",\r\n      \"endTime\": \"10:00:00\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/WorkingCalendar/CalendarId",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"WorkingCalendar",
+										"CalendarId"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "WorkingCalendar/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/WorkingCalendar/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"WorkingCalendar",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Task",
+					"item": [
+						{
+							"name": "Create new task",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Create new task\",\r\n  \"description\": \"Create new task\",\r\n  \"stateId\": 0,\r\n  \"assignedUserRoleId\": \"3eb517ea-3f58-11ea-9754-00ff87267f3f\",\r\n  \"assignedUserId\": \"36d217ce-e0d0-4914-88da-c82752176ecc\",\r\n  \"deadLineDate\": \"2020-05-30\",\r\n  \"expectedStartDate\": \"2020-04-12\",\r\n  \"expectedCompletionDate\": \"2020-04-30\",\r\n  \"priority\": 1,\r\n  \"internalNote\": \"\",\r\n  \"actualStartDate\": \"2020-04-11\",\r\n  \"actualEndDate\": \"2020-05-15\",\r\n  \"isActive\": true,\r\n  \"officeId\": \"40098c36-14f1-4ae8-9211-86e79610dc90\",\r\n  \"departmentId\": \"9bde20a1-bc6b-4d97-af64-99364d976dcc\",\r\n  \"completionPercentage\": 20,\r\n  \"transitionReasonId\": \"a0eb51e0-f4d0-43f2-8626-29c6eb0f966c\",\r\n  \"functionalityTypeId\": 2,\r\n  \"documentReferenceId\": \"46eac201-b6a7-4bd6-9d6b-dd280ae6fe71\",\r\n  \"referenceNo\": \"\",\r\n  \"id\": \"9112e61c-85d1-4e70-bc0a-7e411ca9192b\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get details of task based on task id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task/{{TaskId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task",
+										"{{TaskId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Task",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Update Task\",\r\n  \"description\": \"Update Task\",\r\n  \"stateId\": 0,\r\n  \"assignedUserRoleId\": \"3eb517ea-3f58-11ea-9754-00ff87267f3f\",\r\n  \"assignedUserId\": \"36d217ce-e0d0-4914-88da-c82752176ecc\",\r\n  \"deadLineDate\": \"2020-06-30\",\r\n  \"expectedStartDate\": \"2020-04-12\",\r\n  \"expectedCompletionDate\": \"2020-04-30\",\r\n  \"priority\": 1,\r\n  \"internalNote\": \"\",\r\n  \"actualStartDate\": \"2020-04-11\",\r\n  \"actualEndDate\": \"2020-05-15\",\r\n  \"isActive\": true,\r\n  \"officeId\": \"40098c36-14f1-4ae8-9211-86e79610dc90\",\r\n  \"departmentId\": \"9bde20a1-bc6b-4d97-af64-99364d976dcc\",\r\n  \"completionPercentage\": 20,\r\n  \"transitionReasonId\": \"a0eb51e0-f4d0-43f2-8626-29c6eb0f966c\",\r\n  \"functionalityTypeId\": 3,\r\n  \"documentReferenceId\": \"46eac201-b6a7-4bd6-9d6b-dd280ae6fe71\",\r\n  \"referenceNo\": \"9112e61c-85d1-4e70-bc0a-7e411ca9192b\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task/{{TaskId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task",
+										"{{TaskId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of task based on reference id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task/Tasks/{{RefId}}",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task",
+										"Tasks",
+										"{{RefId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get List of Tasks",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"users\": [\r\n    {\r\n      \"userId\": \"25750891-6f51-4615-80dc-c2c66835de3b\"\r\n    }\r\n  ],\r\n  \"types\": [\r\n    {\r\n      \"functionalityId\": 21\r\n    }\r\n  ],\r\n  \"selectedStatuses\": [\r\n    {\r\n      \"statusId\": 0\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task/Tasks/2020-04-29/2020-05-31",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task",
+										"Tasks",
+										"2020-04-29",
+										"2020-05-31"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create references against a task",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"d3394673-d8b3-4e9e-a8a6-084709b3c079\",\r\n  \"taskId\": \"9112e61c-85d1-4e70-bc0a-7e411ca9192b\",\r\n  \"references\": [\r\n    {\r\n      \"functionalityTypeId\": 3,\r\n      \"referenceId\": \"46eac201-b6a7-4bd6-9d6b-dd280ae6fe71\",\r\n      \"referenceNo\": \"null\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task/ReferenceMap",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task",
+										"ReferenceMap"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Task/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/Task/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"Task",
+										"error"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get task completion history",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": ""
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Office Memo",
+					"item": [
+						{
+							"name": "Create a new OfficeMemo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"note\": \"office memo test\",\r\n  \"userRoles\": [\r\n    {\r\n      \"userRoleId\": \"3e7f3945-3f58-11ea-9754-00ff87267f3f\"\r\n    }\r\n  ],\r\n  \"id\": \"85d6773e-57cb-4151-a542-ef6a207a24e5\",\r\n  \"type\": 0,\r\n  \"functionalityTypeId\": 2,\r\n  \"referenceId\": \"f08c88b5-5b04-4936-9092-11e42b9b8163\",\r\n  \"isActive\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/OfficeMemo",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OfficeMemo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Office Memo details depending on FunctionalityId and ReferenceId",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/OfficeMemo/Functionality/2/Reference/f08c88b5-5b04-4936-9092-11e42b9b8163",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OfficeMemo",
+										"Functionality",
+										"2",
+										"Reference",
+										"f08c88b5-5b04-4936-9092-11e42b9b8163"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Office Memo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"note\": \"Update Office memo\",\r\n  \"userRoles\": [\r\n    {\r\n      \"userRoleId\": \"3e7f3945-3f58-11ea-9754-00ff87267f3f\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/OfficeMemo/85d6773e-57cb-4151-a542-ef6a207a24e5",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OfficeMemo",
+										"85d6773e-57cb-4151-a542-ef6a207a24e5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "OfficeMemo/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{appConfigUrl}}/OfficeMemo/error",
+									"host": [
+										"{{appConfigUrl}}"
+									],
+									"path": [
+										"OfficeMemo",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "RTPS",
+			"item": [
+				{
+					"name": "RTPS services",
+					"item": [
+						{
+							"name": "Creates a new service",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b0935fd3-b34e-41e3-96b4-846f0c7165f6",
+										"exec": [
+											"//console.error();",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "39d83327-b046-4737-8fef-8a908c7bcafa",
+										"exec": [
+											"",
+											"pm.globals.set(\"deptId\", \"9bde20a1-bc6b-4d97-af64-99364d976dcc\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{$guid}}\",\r\n  \"description\": \"RTPS test service\",\r\n  \"departmentId\": \"{{deptId}}\",\r\n  \"stipulatedTimeLimit\": 10,\r\n  \"stipulatedUOMId\": 2,\r\n  \"alertTimeLimit\": 30,\r\n  \"alertUOMId\": 2,\r\n  \"reminderTimeLimit\": 10,\r\n  \"reminderUOMId\": 2,\r\n  \"isActive\": true,\r\n  \"note\": \"Test QA331\",\r\n  \"designatedOfficerId\": \"{{degnOffId}}\",\r\n  \"authorizeOfficers\": [\r\n    {\r\n      \"userRoleId\": \"{{testRoleId}}\"\r\n    }\r\n  ],\r\n  \"code\": \"S111\",\r\n  \"isInternal\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RtpsService",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RtpsService"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of RTPS Services",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "13c2508b-ce5c-4386-bd18-3d5b0277ca7e",
+										"exec": [
+											"var data = JSON.parse(responseBody);",
+											"pm.globals.set(\"rtpsId\", data[0].id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"selectedServices\": [\r\n   \r\n  ],\r\n  \"selectedOffices\": [\r\n    \r\n  ],\r\n  \"selectedDepartments\": [\r\n    \r\n  ],\r\n  \"selectedStatuses\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/List?includeInActives=true&OrderById=2",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"List"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										},
+										{
+											"key": "OrderById",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates an existing service",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{rtpsId}}\",\r\n  \"description\": \"Update service test\",\r\n  \"departmentId\": \"{{deptId}}\",\r\n  \"stipulatedTimeLimit\": 100,\r\n  \"stipulatedUOMId\": 2,\r\n  \"alertTimeLimit\": 50,\r\n  \"alertUOMId\": 2,\r\n  \"reminderTimeLimit\": 41,\r\n  \"reminderUOMId\": 2,\r\n  \"isActive\": true,\r\n  \"note\": \"Test QA\",\r\n  \"designatedOfficerId\": \"{{degnOffId}}\",\r\n  \"authorizeOfficers\": [\r\n    {\r\n      \"userRoleId\": \"{{roleId}}\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RtpsService",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RtpsService"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets BIG LIST of services",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/RtpsService/BigList",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RtpsService",
+										"BigList"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular RTPS service",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RtpsService/{{rtpsId}}",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RtpsService",
+										"{{rtpsId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RtpsService/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RtpsService/error",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RtpsService",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Service deligation",
+					"item": [
+						{
+							"name": "Gets designated services based on current user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/ServiceDeligation/Services",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"ServiceDeligation",
+										"Services"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets designated offices based on current user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/ServiceDeligation/Offices",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"ServiceDeligation",
+										"Offices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Creates new set of user authorization",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{$guid}}\",\r\n  \"authorizeUserId\": \"{{UniqueID}}\",\r\n  \"serviceId\": \"{{serviceId}}\",\r\n  \"officeId\": \"{{rootUnitId}}\",\r\n  \"effectiveFrom\": \"2020-03-15T10:46:54.048Z\",\r\n  \"isActive\": true,\r\n  \"userMapping\": [\r\n    {\r\n      \"userUId\": \"{{UniqueID}}\",\r\n      \"userId\": \"testuser01\",\r\n      \"firstName\": \"Test\",\r\n      \"lastName\": \"425\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/ServiceDeligation",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"ServiceDeligation"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ServiceDeligation/AuthorizeUsers",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/ServiceDeligation/AuthorizeUsers?ServiceUid={{serviceId}}&OfficeUid={{rootUnitId}}&includeInActives=true",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"ServiceDeligation",
+										"AuthorizeUsers"
+									],
+									"query": [
+										{
+											"key": "ServiceUid",
+											"value": "{{serviceId}}"
+										},
+										{
+											"key": "OfficeUid",
+											"value": "{{rootUnitId}}"
+										},
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ServiceDeligation/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/ServiceDeligation/error",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"ServiceDeligation",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "RTPS service request",
+					"item": [
+						{
+							"name": "Creates a new service",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{$guid}}\",\r\n  \"serviceId\": \"{{serviceId}}\",\r\n  \"serviceRequestDate\": \"2020-03-13\",\r\n  \"hmcApplicationReferenceNo\": \"141\",\r\n  \"applicantName\": \"Anchal\",\r\n  \"buildingName\": \"WTL building\",\r\n  \"houseNo\": \"webel\",\r\n  \"flatNo\": \"22\",\r\n  \"streetName\": \"saltlake\",\r\n  \"pinCode\": \"700091\",\r\n  \"contactNo\": \"8553204535\",\r\n  \"eMailId\": \"qatest@mailinator.com\",\r\n  \"isAutoPosted\": false,\r\n  \"isProvisional\": false,\r\n  \"isActive\": true,\r\n  \"officeId\": \"{{rootUnitId}}\",\r\n  \"note\": \"create service test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/CreateServiceRequest",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"CreateServiceRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of RTPS Services",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"selectedServices\": [\r\n   \r\n  ],\r\n  \"selectedOffices\": [\r\n    \r\n  ],\r\n  \"selectedDepartments\": [\r\n    \r\n  ],\r\n  \"selectedStatuses\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/List?includeInActives=true&OrderById=2",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"List"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										},
+										{
+											"key": "OrderById",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RTPSServiceRequest/DueDateDistribution",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"selectedServices\": [\r\n    {\r\n      \"serviceId\": \"{{serviceId}}\"\r\n    }\r\n  ],\r\n  \"selectedOffices\": [\r\n    {\r\n      \"officeId\": \"{{rootUnitId}}\"\r\n    }\r\n  ],\r\n  \"selectedDepartments\": [\r\n    {\r\n      \"departmentId\": \"{{deptId}}\"\r\n    }\r\n  ],\r\n  \"selectedStatuses\": [\r\n    {\r\n      \"statusId\": 0\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/DueDateDistribution",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"DueDateDistribution"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular RTPS service request",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/{{rtpsId}}\n",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"{{rtpsId}}\n"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates a request's status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"functionalityTypeId\": 1,\r\n  \"referenceId\": \"{{referenceId}}\",\r\n  \"statusDate\": \"2020-03-16T05:55:25.793Z\",\r\n  \"statusId\": 2,\r\n  \"note\": \"update status test\",\r\n  \"isActive\": true,\r\n  \"reason\": \"reopned for test\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/UpdateStatus",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"UpdateStatus"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Detail of Form IV Register",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"selectedServices\": [\r\n   \r\n  ],\r\n  \"selectedOffices\": [\r\n    \r\n  ],\r\n  \"selectedDepartments\": [\r\n    \r\n  ],\r\n  \"selectedStatuses\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/FormIVRegister?OrderById=1&ApplicationDateFrom=2020-02-07&DueDateTo=2020-02-14",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"FormIVRegister"
+									],
+									"query": [
+										{
+											"key": "OrderById",
+											"value": "1"
+										},
+										{
+											"key": "ApplicationDateFrom",
+											"value": "2020-02-07"
+										},
+										{
+											"key": "DueDateTo",
+											"value": "2020-02-14"
+										}
+									]
+								},
+								"description": "Details of Form IV Register"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Form I Completion History",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"selectedServices\": [\r\n   \r\n  ],\r\n  \"selectedOffices\": [\r\n    \r\n  ],\r\n  \"selectedDepartments\": [\r\n    \r\n  ],\r\n  \"selectedStatuses\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/CompletionSummary?ApplicationDateFrom=2020-02-07&ApplicationDateTo=2020-03-02",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"CompletionSummary"
+									],
+									"query": [
+										{
+											"key": "ApplicationDateFrom",
+											"value": "2020-02-07"
+										},
+										{
+											"key": "ApplicationDateTo",
+											"value": "2020-03-02"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RTPSServiceRequest/error",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{rtpsUrl}}/RTPSServiceRequest/error",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"RTPSServiceRequest",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Designated Officer Config",
+					"item": [
+						{
+							"name": "Creates a new RTPS Configuration",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"{{$guid}}\",\r\n  \"functionalityTypeId\": 32,\r\n  \"userRoleId\": \"{{9a03e07a-4e77-42ae-ba1b-f11c8a31cbea}}\",\r\n  \"isActive\": true,\r\n  \"note\": \"string\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/DesignatedOfficerConfig",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"DesignatedOfficerConfig"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get List of Designated Officer",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/DesignatedOfficerConfig?includeInActives=true&FunctionalityId=1",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"DesignatedOfficerConfig"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										},
+										{
+											"key": "FunctionalityId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DesignatedOfficerConfig/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rtpsUrl}}/DesignatedOfficerConfig/error",
+									"host": [
+										"{{rtpsUrl}}"
+									],
+									"path": [
+										"DesignatedOfficerConfig",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Designated Officer Configuration",
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Court case martial",
+			"item": [
+				{
+					"name": "Court",
+					"item": [
+						{
+							"name": "Creates a new court master record",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"code\": \"C009\",\n    \"description\": \" Court Test \",\n    \"isActive\": true,\n    \"note\": \"Test009\",\n    \"id\": \"{{$guid}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Court",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Court"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of court master record",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Court/Courts?includeInActives=true",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Court",
+										"Courts"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular court master record",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Court/{{courtMasterId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Court",
+										"{{courtMasterId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates court master record data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"code\": \"C006\",\n    \"description\": \"Update existing court master\",\n    \"isActive\": true,\n    \"note\": \"Update\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Court/{{courtMasterId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Court",
+										"{{courtMasterId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Court/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{courtCaseUrl}}/Court/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Court",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Lawyer",
+					"item": [
+						{
+							"name": "Creates a new lawyer master record",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"code\": \"LAR2\",\r\n  \"name\": \"Amit\",\r\n  \"isActive\": true,\r\n  \"note\": \"Lawyer 02\",\r\n  \"contactNo\": \"8553204535\",\r\n  \"alternateContactNo\": \"8855224477\",\r\n  \"eMailId\": \"qatest@mailinator.com\",\r\n  \"courts\": [\r\n    {\r\n      \"courtId\": \"{{courtMasterId}}\",\r\n      \"effectiveFrom\": \"2020-03-19\"\r\n    }\r\n  ],\r\n  \"id\": \"{{$guid}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Lawyer",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Lawyer"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of lawyer master record",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Lawyer/Lawyers?includeInActives=true",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Lawyer",
+										"Lawyers"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular lawyer master record",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{courtCaseUrl}}/Lawyer/{{lawyerId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Lawyer",
+										"{{lawyerId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates lawyer master record data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"code\": \"LR02\",\n    \"name\": \"Sanjib saha\",\n    \"isActive\": true,\n    \"note\": \"Update lawyer\",\n    \"contactNo\": \"8553204535\",\n    \"alternateContactNo\": \"8877998877\",\n    \"eMailId\": \"sanjib@mailinator.com\",\n    \"courts\": [\n        {\n            \"courtId\": \"{{courtMasterId}}\",\n            \"effectiveFrom\": \"2020-02-19\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/Lawyer/{{lawyerId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Lawyer",
+										"{{lawyerId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Lawyer/error",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{courtCaseUrl}}/Lawyer/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"Lawyer",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Lawyer panel",
+					"item": [
+						{
+							"name": "Creates a new Lawyer panel",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"effectiveFrom\": \"2020-03-19\",\n    \"panel\": [\n        {\n            \"lawyerId\": \"{{lawyerId}}\",\n            \"panelInclusionDate\": \"2020-03-19\",\n            \"panelExclusionDate\": \"2021-03-19\",\n            \"isActive\": true,\n            \"isInternal\": false\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerPanel",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerPanel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets lawyer panel as on effective date",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerPanel/EffectiveFrom/2020-03-18",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerPanel",
+										"EffectiveFrom",
+										"2020-03-18"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get List of Lawyer Panels",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerPanel/Panels",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerPanel",
+										"Panels"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Panel details by Id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerPanel/PanelId/78cb4fdd-f28a-4ae5-9034-57826c7d21d0",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerPanel",
+										"PanelId",
+										"78cb4fdd-f28a-4ae5-9034-57826c7d21d0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LawyerPanel/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerPanel/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerPanel",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Court case",
+					"item": [
+						{
+							"name": "Creates a new court case master record",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"New court ccase\",\n    \"courtId\": \"{{courtMasterId}}\",\n    \"holdingNo\": \"25\",\n    \"arNo\": \"11\",\n    \"note\": \"Test\",\n    \"isActive\": true,\n    \"id\": \"{{$guid}}\",\n    \"code\": \"NCC1\",\n    \"caseNo\": \"001\",\n    \"initiationDate\": \"2020-03-19\",\n    \"referenceNo\": \"0001\",\n    \"petitioners\": [\n        {\n            \"petitionerName\": \"Gopal\"\n        }\n    ],\n    \"respondents\": [\n        {\n            \"respondentName\": \"Ram\"\n        }\n    ],\n    \"caseType\": \"string\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get list of court case master records",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fromDate\": \"2020-04-12\",\r\n  \"toDate\": \"2020-05-30\",\r\n  \"cases\": [\r\n   \r\n  ],\r\n  \"courts\": [\r\n    \r\n  ],\r\n  \"selectedStatuses\": [\r\n    \r\n  ],\r\n  \"orderBy\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/CourtCases?includeInActives=true",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"CourtCases"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular court case master record",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/{{courtCaseId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"{{courtCaseId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Court Case Register",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fromDate\": \"2020-04-12\",\r\n  \"toDate\": \"2020-05-30\",\r\n  \"cases\": [\r\n   \r\n  ],\r\n  \"courts\": [\r\n    \r\n  ],\r\n  \"selectedStatuses\": [\r\n    \r\n  ],\r\n  \"orderBy\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/CaseRegister",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"CaseRegister"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates court case master record data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"courtId\": \"ee46a13d-a325-4db4-8c1a-eff423c8ffe8\",\r\n  \"referenceNo\": \"\",\r\n  \"holdingNo\": \"H04\",\r\n  \"arNo\": \"AR04\",\r\n  \"note\": \"\",\r\n  \"isActive\": true,\r\n  \"courtOrderId\": \"4b66deed-9e71-11ea-a086-0252055417c2\",\r\n  \"fileRackNo\": \"\",\r\n  \"petitioners\": [\r\n    {\r\n      \"petitionerName\": \"seema\"\r\n    }\r\n  ],\r\n  \"respondents\": [\r\n    {\r\n      \"respondentName\": \"Ajay\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/5ee5c11e-076b-4328-b373-6a49889b5684",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"5ee5c11e-076b-4328-b373-6a49889b5684"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates current status of a court case",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"courtCaseId\": \"d51f6a89-ce98-4ab7-bc06-d9ebb7fbcd33\",\r\n  \"courtOrderId\": \"43a0b8c4-00db-4675-be12-887907c22d92\",\r\n  \"statusId\": 3,\r\n  \"statusDate\": \"2020-05-30\",\r\n  \"reason\": \"xyz\",\r\n  \"isActive\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/d51f6a89-ce98-4ab7-bc06-d9ebb7fbcd33",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"d51f6a89-ce98-4ab7-bc06-d9ebb7fbcd33"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets case history",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/History/5ee5c11e-076b-4328-b373-6a49889b5684",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"History",
+										"5ee5c11e-076b-4328-b373-6a49889b5684"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CourtCase/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCase/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCase",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Court case type",
+					"item": [
+						{
+							"name": "Create new CourtCaseType",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"code\": \"Type1\",\n    \"description\": \"asdf\",\n    \"isActive\": true,\n    \"id\": \"{{$guid}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseType",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseType"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets list of court master record",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseType/Courts?includeInActives=true",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseType",
+										"Courts"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular court case type master record",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{courtCaseUrl}}/",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CourtCaseType/error",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseType/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseType",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Court Case Order",
+					"item": [
+						{
+							"name": "Creates a new court case order master record",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orderReferenceNo\": \"CCM/000011/20-21\",\r\n  \"orderReceiveDate\": \"2020-05-31\",\r\n  \"orderDetails\": \"\",\r\n  \"note\": \"CourtCaseOrder1\",\r\n  \"isActive\": true,\r\n  \"isIncoming\": true,\r\n  \"orderTypeId\": 2,\r\n  \"sendReceiverName\": \"sunita\",\r\n  \"id\": \"b7b2deb1-1477-4635-9bf0-8abf608170f1\",\r\n  \"courtCaseId\": \"b3a34c38-f0dd-4c8f-91df-920e5fec3ae0\",\r\n  \"orderDate\": \"2020-03-31\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseOrder",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseOrder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get List of Court Case Order Master Records",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fromDate\": \"2020-04-12\",\r\n  \"toDate\": \"2020-05-30\",\r\n  \"cases\": [\r\n    \r\n  ],\r\n  \"courts\": [\r\n    \r\n  ],\r\n  \"types\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseOrder/CourtCaseOrders?includeInActives=true&OnlyIncomingOrders=true",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseOrder",
+										"CourtCaseOrders"
+									],
+									"query": [
+										{
+											"key": "includeInActives",
+											"value": "true"
+										},
+										{
+											"key": "OnlyIncomingOrders",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get list of open court case order master records",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fromDate\": \"2020-01-12\",\r\n  \"toDate\": \"2020-05-30\",\r\n  \"cases\": [\r\n    \r\n  ],\r\n  \"courts\": [\r\n    \r\n  ],\r\n  \"types\": [\r\n    \r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseOrder/OpenOrders?OnlyIncomingOrders=true",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseOrder",
+										"OpenOrders"
+									],
+									"query": [
+										{
+											"key": "OnlyIncomingOrders",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets detail of a particular court case master record",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseOrder/{{CaseOrderId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseOrder",
+										"{{CaseOrderId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updates court case order data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orderReferenceNo\": \"Ref2/123/23\",\r\n  \"orderReceiveDate\": \"2020-05-18\",\r\n  \"orderDetails\": \"Order not received\",\r\n  \"note\": \"\",\r\n  \"isActive\": true,\r\n  \"isIncoming\": true,\r\n  \"orderTypeId\": 2,\r\n  \"sendReceiverName\": \"Mohan\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseOrder/{{CaseOrderId}}",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseOrder",
+										"{{CaseOrderId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CourtCaseOrder/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/CourtCaseOrder/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"CourtCaseOrder",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "LawyerAssignment",
+					"item": [
+						{
+							"name": "Creates a new Lawyer panel",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"47be669d-c567-4796-b195-a7928c8efd45\",\r\n  \"courtCaseId\": \"5ee5c11e-076b-4328-b373-6a49889b5684\",\r\n  \"effectiveFrom\": \"2020-02-04\",\r\n  \"isActive\": true,\r\n  \"lawyers\": [\r\n    {\r\n      \"lawyerId\": \"09fb5389-767f-4b1f-b821-98e07cf5b47b\",\r\n      \"assignmentStartDate\": \"2020-02-04\",\r\n      \"assignmentEndDate\": \"2020-05-31\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerAssignment",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerAssignment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Gets lawyer panel as on effective date",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerAssignment?EffectiveFrom=2020-02-04&CourtCaseId=5ee5c11e-076b-4328-b373-6a49889b5684",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerAssignment"
+									],
+									"query": [
+										{
+											"key": "EffectiveFrom",
+											"value": "2020-02-04"
+										},
+										{
+											"key": "CourtCaseId",
+											"value": "5ee5c11e-076b-4328-b373-6a49889b5684"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LawyerAssignment/error",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{courtCaseUrl}}/LawyerAssignment/error",
+									"host": [
+										"{{courtCaseUrl}}"
+									],
+									"path": [
+										"LawyerAssignment",
+										"error"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cbe3af65-87a6-4059-b035-c0d7d37ec34e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a172640e-d037-411a-8bbb-c19366279543",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
